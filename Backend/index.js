@@ -75,6 +75,8 @@ app.get('/view', async (request, response) => {
     var data = await registermodel.find();
     response.send(data);
 });
+
+
 //for delete
 app.put('/remove/:id', async (request, response) => {
     let id = request.params.id;
@@ -116,17 +118,39 @@ app.get('/rview', async (request, response) => {
     response.send(result);
 });
 
-app.get('/search', async (request, response) => {
-const query = request.params.query; // Access the route parameter correctly
-try {
-const result = await registermodel
-.find({district: {$regex: query, $options: 'i'}})
-.limit(10)
-.select('-_id'); // Exclude _id field, you can include/exclude fields as nee
-response.json(result); } catch (error) {
-response.status(500).json({ message: error.message });
-}
+app.get('/search/:query/:filter', async (request, response) => {
+    console.log(request.params);
+    const query = request.params.query;
+    const filter = request.params.filter;
+    try {
+        let filterQuery = {};
+        switch (filter) {
+            case 'district':
+                filterQuery = { district: { $regex: query, $options: 'i' } };
+                break;
+            case 'type':
+                filterQuery = { type: { $regex: query, $options: 'i' } };
+                break;
+            case 'state':
+                filterQuery = { state: { $regex: query, $options: 'i' } };
+                break;
+            
+            default:
+                response.status(400).json({ message: "Invalid filter" });
+                return;
+        }
+        
+        const result = await registermodel
+            .find(filterQuery)
+            .limit(10)
+            .select('-_id'); // Exclude _id field, you can include/exclude fields as needed
+
+        response.json(result);
+    } catch (error) {
+        response.status(500).json({ message: error.message });
+    }
 });
+
 
 //for type
 app.get('/tview', async (request, response) => {
