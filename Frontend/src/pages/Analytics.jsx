@@ -44,7 +44,7 @@ const updateValues = (value) =>{
         setUpdate(true);
         }
         var result=      
-        <div className='table-container'>
+        <div className='table-container'  style={{marginLeft:'109px' }}>
      
 <Typography variant='h5'>User Details</Typography><br></br>
 
